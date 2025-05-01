@@ -1,0 +1,22 @@
+{
+    "name": "Mes Lectures Thérapies",
+    "short_name": "Lectures",
+    "description": "Suivi de mes lectures pour ma pratique de thérapeute",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#f8f0f5",
+    "theme_color": "#b35f8b",
+    "icons": [
+      {
+        "src": "togo-icon.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "togo-icon.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ]
+  }
+  

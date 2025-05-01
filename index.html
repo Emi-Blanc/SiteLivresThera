@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Mes Lectures Thérapies</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#b35f8b">
+</head>
+<body>
+  <header>
+    <img src="assets/Fauteuil Togo en prune minimaliste.png" alt="Logo" id="logo">
+    <h1>Mes Lectures Thérapies</h1>
+  </header>
+
+  <main>
+    <form id="book-form">
+      <input type="text" id="title" placeholder="Titre" required>
+      <input type="text" id="author" placeholder="Auteur" required>
+      <input type="text" id="edition" placeholder="Édition">
+      <input type="text" id="editionDate" placeholder="Date d'édition">
+      <input type="date" id="readingDate" placeholder="Date de lecture" required>
+      <textarea id="comment" placeholder="Commentaire" required></textarea>
+      <input type="number" id="note" step="0.1" min="0" max="10" placeholder="Note /10" required>
+      <input type="file" id="cover" accept="image/*">
+      <button type="submit">Ajouter le livre</button>
+      <button type="button" id="cancel-edit" style="display: none;">Annuler</button>
+    </form>
+
+    <div id="controls">
+      <button onclick="sortBooks('title')">Trier par titre</button>
+      <button onclick="sortBooks('author')">Trier par auteur</button>
+      <button onclick="sortBooks('readingDate')">Trier par date de lecture</button>
+      <button onclick="sortBooksByNote()">Trier par note</button>
+    </div>
+
+    <input type="text" id="search-input" placeholder="Rechercher par mot-clé..." oninput="applyFilters()">
+
+    <select id="note-filter" onchange="applyFilters()">
+      <option value="">Toutes les notes</option>
+      <option value="0">0</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+      <option value="6">6</option>
+      <option value="7">7</option>
+      <option value="8">8</option>
+      <option value="9">9</option>
+      <option value="10">10</option>
+    </select>
+
+    <button onclick="exportBooks()">Exporter en JSON</button>
+
+    <div id="book-list"></div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

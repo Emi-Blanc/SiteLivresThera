@@ -1,0 +1,81 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: white; /* rose pâle */
+    margin: 0;
+    padding: 0;
+    color: #b35f8b; /* prune foncé */
+  }
+  
+  header {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    padding: 20px;
+  }
+  
+  #logo {
+    height: 80px;
+    margin-right: 20px;
+  }
+  
+  h1 {
+    font-size: 2em;
+    margin: 0;
+  }
+  
+  form {
+    background-color: #fbd5e5; /* rose plus soutenu */
+    margin: 20px;
+    padding: 20px;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  input, textarea, button {
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid #d08ca7;
+  }
+  
+  button {
+    background-color: #d08ca7; /* prune plus doux */
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #b35f8b;
+  }
+  
+  #controls {
+    margin: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+  
+  #book-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 20px;
+  }
+  
+  .book-card {
+    background: white;
+    border: 2px solid #d08ca7;
+    border-radius: 15px;
+    padding: 15px;
+    text-align: center;
+  }
+  
+  .book-card img {
+    height: 150px;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+  
