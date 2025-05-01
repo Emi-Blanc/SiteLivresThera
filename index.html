@@ -6,7 +6,21 @@
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#b35f8b">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pikaday/css/pikaday.css">
 </head>
+
+<script src="https://cdn.jsdelivr.net/npm/pikaday/pikaday.js"></script>
+
+<script>
+  new Pikaday({
+    field: document.getElementById('readingDate'),
+    format: 'YYYY-MM-DD',
+    toString(date) {
+      return date.toISOString().split('T')[0]; // yyyy-mm-dd
+    }
+  });
+</script>
+
 <body>
   <header>
     <img src="assets/Fauteuil Togo en prune minimaliste.png" alt="Logo" id="logo">
