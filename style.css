@@ -79,3 +79,7 @@ body {
     border-radius: 10px;
   }
   
+  select{
+    background-color: #d08ca7; /* prune plus doux */
+    color: white;
+  }
