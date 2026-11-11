@@ -5,10 +5,140 @@
 <title>Le carnet de lectures</title>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/icone.png">
-<meta name="theme-color" content="#482c42">
+<meta name="theme-color" content="#35205e">
 <style>
-:root{color-scheme:light;--ink:#302331;--muted:#675765;--plum:#633953;--line:#ded1d7;--paper:#fffdf9;background:#f7f1ea;color:var(--ink);font:16px/1.5 system-ui,sans-serif}
-*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0}header{background:#482c42;color:#fff7ee;padding:clamp(2rem,6vw,5rem) max(1rem,calc((100vw - 70rem)/2));border-bottom:5px solid #be8c9c}header p{color:#f1c9d6;margin:0 0 .6rem}h1,h2,h3{font-family:Georgia,serif;line-height:1.14;margin:0 0 .6rem}h1{font-size:clamp(2.5rem,7vw,5rem);font-weight:400}h2{font-size:2rem}h3{font-size:1.45rem}main{max-width:72rem;padding:1.5rem 1rem 3rem;margin:auto}.bar,.tools,.actions{display:flex;gap:.65rem;flex-wrap:wrap;align-items:center}.bar{justify-content:space-between;margin-bottom:1rem}.tools{padding:1rem;background:#eee2e7;border-radius:12px}.tools input{flex:2 1 15rem}.tools select{flex:1 1 10rem}button,input,textarea,select{font:inherit;border:1px solid #aa94a3;border-radius:8px;padding:.65rem .8rem;min-height:44px;color:inherit;background:var(--paper)}button{cursor:pointer;color:var(--plum);font-weight:600}.primary{background:var(--plum);color:white;border-color:var(--plum)}:focus-visible{outline:3px solid #9a517a;outline-offset:2px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr));gap:1rem}.card,.empty{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.2rem;overflow-wrap:anywhere}.card header{background:none;color:inherit;padding:0;border:0;display:flex;gap:1rem;align-items:flex-start}.card img{width:64px;height:92px;object-fit:contain;object-position:center top}.card p{white-space:pre-wrap;margin:.5rem 0 1rem}.meta,small,#status{color:var(--muted)}.tag{display:inline-block;background:#efe4ea;color:#563147;border-radius:1rem;padding:.18rem .65rem;margin:.2rem .25rem .5rem 0;font-size:.85rem}blockquote{margin:.65rem 0;padding:.5rem .9rem;border-left:3px solid #ba879d;white-space:pre-wrap}.card h4{margin:1rem 0 .25rem}dialog{width:min(42rem,calc(100% - 2rem));max-height:90vh;border:1px solid var(--line);border-radius:16px;background:var(--paper);color:var(--ink);padding:1.3rem}dialog::backdrop{background:#2c1b2aa0}form,.fields,fieldset{display:grid;gap:.8rem}.fields{grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr))}label{display:grid;gap:.25rem;font-weight:600}label input,label textarea{width:100%;min-width:0}textarea{min-height:5rem;resize:vertical}fieldset{border:1px solid var(--line);border-radius:8px;margin:0;padding:.8rem}legend{font-weight:600}footer{margin-top:2rem;border-top:1px solid var(--line);padding-top:1rem}#form-error{color:#8b2942;margin:0}button[aria-pressed="true"]{background:#e7d1df}.danger{margin-left:auto}
+:root {
+  color-scheme: light;
+  --ink: #21182b;
+  --muted: #5d5068;
+  --paper: #fffaf2;
+  --line: #b7a6bb;
+  --plum: #35205e;
+  background: #f4ede2;
+  color: var(--ink);
+  font: 16px/1.55 "DM Sans", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; }
+body > header {
+  isolation: isolate;
+  position: relative;
+  overflow: hidden;
+  max-width: 72rem;
+  margin: 1rem auto 0;
+  border-radius: 1.6rem;
+  padding: clamp(2rem, 6vw, 5rem);
+  background: #35205e;
+  color: #fffaf2;
+}
+body > header::before, body > header::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+  pointer-events: none;
+}
+body > header::before {
+  width: 22rem;
+  height: 22rem;
+  right: -6rem;
+  bottom: -15rem;
+  background: #f48976;
+}
+body > header::after {
+  width: 9rem;
+  height: 9rem;
+  right: 2rem;
+  top: -6.5rem;
+  background: #f7d66a;
+}
+body > header p { margin: 0 0 .65rem; color: #f7d66a; font-weight: 700; }
+h1, h2, h3 {
+  font-family: "Bricolage Grotesque", system-ui, sans-serif;
+  line-height: 1.08;
+  letter-spacing: -.04em;
+  margin: 0 0 .55rem;
+  overflow-wrap: anywhere;
+}
+h1 { max-width: 15ch; font-size: clamp(2.5rem, 8vw, 6rem); }
+h2 { font-size: clamp(1.65rem, 5vw, 2.4rem); }
+h3 { font-size: 1.55rem; }
+main { max-width: 74rem; margin: auto; padding: 1.25rem 1rem 3rem; }
+.bar, .tools, .actions { display: flex; flex-wrap: wrap; align-items: center; gap: .65rem; }
+.bar { justify-content: space-between; margin-bottom: .85rem; }
+.tools { padding: .9rem; background: #dfd6f5; border-radius: 1.1rem; }
+.tools input { flex: 2 1 15rem; }
+.tools select { flex: 1 1 10rem; }
+button, input, textarea, select {
+  min-width: 0;
+  max-width: 100%;
+  min-height: 44px;
+  padding: .65rem .85rem;
+  border: 1px solid var(--line);
+  border-radius: .7rem;
+  background: var(--paper);
+  color: inherit;
+  font: inherit;
+}
+button { cursor: pointer; font-weight: 700; }
+button[aria-pressed="true"] { background: var(--plum); color: white; border-color: var(--plum); }
+button:disabled { cursor: wait; opacity: .65; }
+.primary { background: #f7d66a; color: #21182b; border-color: #ab8d30; }
+:focus-visible { outline: 3px solid #744ac8; outline-offset: 2px; }
+@media (hover: hover) { button:not(:disabled):hover { box-shadow: inset 0 0 0 1px currentColor; } }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); gap: 1rem; }
+.card, .empty {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 1.2rem;
+  padding: 1.15rem;
+  overflow-wrap: anywhere;
+}
+.card { display: flex; flex-direction: column; gap: .45rem; }
+.card:nth-child(4n + 1) { background: #f9e1d8; }
+.card:nth-child(4n + 2) { background: #e3e9d4; }
+.card:nth-child(4n + 3) { background: #efe4fa; }
+.card:nth-child(4n + 4) { background: #faedc4; }
+.card header { display: flex; align-items: flex-start; gap: .85rem; margin-bottom: .4rem; }
+.card header > div { min-width: 0; }
+.card img { width: 68px; height: 98px; object-fit: contain; object-position: center top; }
+.card p { margin: 0 0 .45rem; white-space: pre-wrap; }
+.card h4 { margin: .7rem 0 0; }
+.card .actions { margin-top: auto; padding-top: .6rem; }
+.meta, small, #status { color: var(--muted); }
+.tag {
+  align-self: flex-start;
+  background: #fffaf2;
+  border: 1px solid var(--line);
+  border-radius: 2rem;
+  padding: .15rem .65rem;
+  font-size: .85rem;
+}
+blockquote { margin: .25rem 0; padding: .45rem .75rem; border-left: 3px solid #744ac8; white-space: pre-wrap; }
+dialog {
+  width: min(44rem, calc(100% - 1.5rem));
+  max-height: 90vh;
+  max-height: 90dvh;
+  border: 1px solid var(--line);
+  border-radius: 1.25rem;
+  padding: clamp(1rem, 4vw, 1.6rem);
+  background: var(--paper);
+  color: var(--ink);
+}
+dialog::backdrop { background: #21182bb0; }
+form, .fields, fieldset, #quote-fields { display: grid; gap: .75rem; }
+#unlock { max-width: 31rem; background: #dfd6f5; padding: 1.25rem; border-radius: 1.2rem; }
+#login-status, #form-error { margin: 0; color: #782943; }
+.fields { grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); }
+label { display: grid; gap: .25rem; font-weight: 700; }
+label input, label textarea { width: 100%; }
+textarea { min-height: 5rem; resize: vertical; }
+fieldset { min-width: 0; margin: 0; border: 1px solid var(--line); border-radius: .75rem; padding: .8rem; }
+legend { font-weight: 700; }
+footer { margin-top: 2rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+@media (max-width: 74rem) { body > header { margin-inline: 1rem; } }
+@media (max-width: 34rem) { .bar > .primary { width: 100%; } }
 </style>
 <header><p>Bibliothèque de consultation</p><h1>Le carnet de lectures</h1></header>
 <main>
