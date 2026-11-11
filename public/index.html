@@ -139,6 +139,11 @@ legend { font-weight: 700; }
 footer { margin-top: 2rem; border-top: 1px solid var(--line); padding-top: 1rem; }
 @media (max-width: 74rem) { body > header { margin-inline: 1rem; } }
 @media (max-width: 34rem) { .bar > .primary { width: 100%; } }
+details.editor-section { border: 1px solid var(--line); border-radius: .85rem; padding: .65rem .85rem; }
+details.editor-section > summary { cursor: pointer; font-weight: 750; padding: .4rem 0; }
+details.editor-section[open] > summary { margin-bottom: .65rem; }
+.editor-fields { display: grid; gap: .75rem; }
+.editor-actions { position: sticky; bottom: -1px; background: var(--paper); padding: .65rem 0; }
 </style>
 <header><h1>Le carnet de lectures psy</h1></header>
 <main>
@@ -157,17 +162,25 @@ footer { margin-top: 2rem; border-top: 1px solid var(--line); padding-top: 1rem;
 <dialog id="editor" aria-labelledby="editor-title"><form id="book-form">
 <h2 id="editor-title">Ajouter un livre</h2>
 <div class="fields">
-<label>Titre<input name="title" required></label><label>Auteur ou autrice<input name="author" required></label>
+<label>Titre<input name="title" required></label><label>Auteur ou autrice<input name="author"></label>
+</div>
+<label>Ce que je retiens<textarea name="comment" placeholder="Un mot, une idée, une phrase à retrouver…"></textarea></label>
+<details class="editor-section" id="practice-section"><summary>En consultation</summary>
+<label>Pistes pour mes consultations<textarea name="practice" placeholder="Une question, un exercice, une reformulation…"></textarea></label>
+</details>
+<details class="editor-section" id="quotes-section"><summary>Citations et passages</summary>
+<div class="editor-fields"><div id="quote-fields"></div><button type="button" id="add-quote">+ Ajouter une citation</button></div>
+</details>
+<details class="editor-section" id="details-section"><summary>Thèmes, couverture et détails du livre</summary>
+<div class="editor-fields"><label>Thèmes <small>Sépare-les par une virgule.</small><input name="themes" placeholder="Relations familiales, limites…"></label>
+<div class="fields">
 <label>Maison d’édition<input name="edition"></label><label>Année de ton édition<input name="editionDate" placeholder="Ex. 2012"></label>
 <label>Jour où tu as terminé le livre<input name="readingDate" type="date"></label><label>Note sur 10<input name="note" type="number" min="0" max="10" step="0.1"></label>
 </div>
-<label>Thèmes <small>Sépare-les par une virgule.</small><input name="themes" placeholder="Relations familiales, limites…"></label>
-<label>Ce que je retiens<textarea name="comment" placeholder="Les idées principales à garder en tête"></textarea></label>
-<label>Pistes pour mes consultations<textarea name="practice" placeholder="Une question à poser, un exercice, une manière de reformuler…"></textarea></label>
-<fieldset><legend>Citations et passages</legend><div id="quote-fields"></div><button type="button" id="add-quote">+ Ajouter une citation</button></fieldset>
-<label>Couverture <input type="file" name="cover" accept="image/png,image/jpeg,image/webp,image/gif"></label>
+<label>Couverture <input type="file" name="cover" accept="image/png,image/jpeg,image/webp,image/gif"></label></div>
+</details>
 <p id="form-error" role="alert" hidden></p>
-<div class="actions"><button class="primary" id="save">Enregistrer</button><button type="button" id="cancel">Annuler</button></div>
+<div class="actions editor-actions"><button class="primary" id="save">Enregistrer</button><button type="button" id="cancel">Annuler</button></div>
 </form></dialog>
 <script>
 'use strict';
@@ -404,6 +417,9 @@ function openBook(book = null) {
   form.reset();
   $('form-error').hidden = true;
   $('quote-fields').replaceChildren();
+  $('practice-section').open = Boolean(book?.practice);
+  $('quotes-section').open = Boolean(book?.quotes.length);
+  $('details-section').open = false;
   $('editor-title').textContent = book ? 'Modifier la fiche' : 'Ajouter un livre';
   if (book) {
     for (const field of fields) form.elements[field].value = book[field];
@@ -436,7 +452,7 @@ form.addEventListener('submit', async event => {
   $('form-error').hidden = true;
   try {
     const book = Object.fromEntries(fields.map(field => [field,form.elements[field].value.trim()]));
-    if (!book.title || !book.author) throw new Error('Indique un titre et un auteur ou une autrice.');
+    if (!book.title) throw new Error('Indique un titre.');
     book.id = editing?.id ?? newId();
     book.themes = [...new Set(form.elements.themes.value.split(',').map(s => s.trim()).filter(Boolean))];
     book.quotes = [...$('quote-fields').children].map(row => ({
