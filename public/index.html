@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le carnet de lectures</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icone.png">
+<meta name="theme-color" content="#482c42">
+<style>
+:root{color-scheme:light;--ink:#302331;--muted:#675765;--plum:#633953;--line:#ded1d7;--paper:#fffdf9;background:#f7f1ea;color:var(--ink);font:16px/1.5 system-ui,sans-serif}
+*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0}header{background:#482c42;color:#fff7ee;padding:clamp(2rem,6vw,5rem) max(1rem,calc((100vw - 70rem)/2));border-bottom:5px solid #be8c9c}header p{color:#f1c9d6;margin:0 0 .6rem}h1,h2,h3{font-family:Georgia,serif;line-height:1.14;margin:0 0 .6rem}h1{font-size:clamp(2.5rem,7vw,5rem);font-weight:400}h2{font-size:2rem}h3{font-size:1.45rem}main{max-width:72rem;padding:1.5rem 1rem 3rem;margin:auto}.bar,.tools,.actions{display:flex;gap:.65rem;flex-wrap:wrap;align-items:center}.bar{justify-content:space-between;margin-bottom:1rem}.tools{padding:1rem;background:#eee2e7;border-radius:12px}.tools input{flex:2 1 15rem}.tools select{flex:1 1 10rem}button,input,textarea,select{font:inherit;border:1px solid #aa94a3;border-radius:8px;padding:.65rem .8rem;min-height:44px;color:inherit;background:var(--paper)}button{cursor:pointer;color:var(--plum);font-weight:600}.primary{background:var(--plum);color:white;border-color:var(--plum)}:focus-visible{outline:3px solid #9a517a;outline-offset:2px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr));gap:1rem}.card,.empty{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.2rem;overflow-wrap:anywhere}.card header{background:none;color:inherit;padding:0;border:0;display:flex;gap:1rem;align-items:flex-start}.card img{width:64px;height:92px;object-fit:contain;object-position:center top}.card p{white-space:pre-wrap;margin:.5rem 0 1rem}.meta,small,#status{color:var(--muted)}.tag{display:inline-block;background:#efe4ea;color:#563147;border-radius:1rem;padding:.18rem .65rem;margin:.2rem .25rem .5rem 0;font-size:.85rem}blockquote{margin:.65rem 0;padding:.5rem .9rem;border-left:3px solid #ba879d;white-space:pre-wrap}.card h4{margin:1rem 0 .25rem}dialog{width:min(42rem,calc(100% - 2rem));max-height:90vh;border:1px solid var(--line);border-radius:16px;background:var(--paper);color:var(--ink);padding:1.3rem}dialog::backdrop{background:#2c1b2aa0}form,.fields,fieldset{display:grid;gap:.8rem}.fields{grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr))}label{display:grid;gap:.25rem;font-weight:600}label input,label textarea{width:100%;min-width:0}textarea{min-height:5rem;resize:vertical}fieldset{border:1px solid var(--line);border-radius:8px;margin:0;padding:.8rem}legend{font-weight:600}footer{margin-top:2rem;border-top:1px solid var(--line);padding-top:1rem}#form-error{color:#8b2942;margin:0}button[aria-pressed="true"]{background:#e7d1df}.danger{margin-left:auto}
+</style>
+<header><p>Bibliothèque de consultation</p><h1>Le carnet de lectures</h1></header>
+<main>
+<form id="unlock">
+<label>Clé d’accès au carnet<input id="access-key" type="password" required autocomplete="current-password"></label>
+<div><button class="primary">Ouvrir mon carnet</button></div>
+<p id="login-status" role="status"></p>
+</form>
+<div id="library" hidden>
+<div class="bar"><div class="actions" aria-label="Vues"><button id="books-tab" aria-pressed="true">Mes livres</button><button id="quotes-tab" aria-pressed="false">Citations</button></div><button class="primary" id="add">+ Ajouter un livre</button></div>
+<div class="tools"><input id="search" type="search" aria-label="Rechercher dans le carnet" placeholder="Rechercher un livre, un thème, une phrase…"><select id="theme" aria-label="Filtrer par thème"><option value="">Tous les thèmes</option></select></div>
+<p id="status" role="status"></p>
+<section id="results" class="grid" aria-label="Résultats"></section>
+<footer><div class="actions"><button id="backup">Exporter mes lectures</button><button id="restore">Importer un fichier JSON</button><input hidden type="file" accept=".json,application/json" id="import"></div><p><small>Les fiches enregistrées sont accessibles avec la même clé sur tes appareils. Tu peux aussi en exporter une copie.</small></p></footer>
+</div></main>
+<dialog id="editor" aria-labelledby="editor-title"><form id="book-form">
+<h2 id="editor-title">Ajouter un livre</h2>
+<div class="fields">
+<label>Titre<input name="title" required></label><label>Auteur ou autrice<input name="author" required></label>
+<label>Maison d’édition<input name="edition"></label><label>Année de ton édition<input name="editionDate" placeholder="Ex. 2012"></label>
+<label>Jour où tu as terminé le livre<input name="readingDate" type="date"></label><label>Note sur 10<input name="note" type="number" min="0" max="10" step="0.1"></label>
+</div>
+<label>Thèmes <small>Sépare-les par une virgule.</small><input name="themes" placeholder="Relations familiales, limites…"></label>
+<label>Ce que je retiens<textarea name="comment" placeholder="Les idées principales à garder en tête"></textarea></label>
+<label>Pistes pour mes consultations<textarea name="practice" placeholder="Une question à poser, un exercice, une manière de reformuler…"></textarea></label>
+<fieldset><legend>Citations et passages</legend><div id="quote-fields"></div><button type="button" id="add-quote">+ Ajouter une citation</button></fieldset>
+<label>Couverture <input type="file" name="cover" accept="image/png,image/jpeg,image/webp,image/gif"></label>
+<p id="form-error" role="alert" hidden></p>
+<div class="actions"><button class="primary" id="save">Enregistrer</button><button type="button" id="cancel">Annuler</button></div>
+</form></dialog>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const endpoint = '/.netlify/functions/carnet';
+const form = $('book-form');
+const editor = $('editor');
+const fields = ['title','author','edition','editionDate','readingDate','note','comment','practice'];
+const str = value => typeof value === 'string' ? value : typeof value === 'number' ? String(value) : '';
+const norm = value => value.normalize('NFD').replace(/\p{Diacritic}/gu,'').toLowerCase();
+const coverImage = value => /^data:image\/(png|jpeg|webp|gif);base64,/i.test(value) ? value : '';
+const newId = () => globalThis.crypto?.randomUUID?.() ?? Date.now().toString(36) + Math.random().toString(36).slice(2);
+let books = [];
+let editing = null;
+let view = 'books';
+let accessKey = '';
+let version = null;
+let refreshing = false;
+let writing = false;
+let saving = false;
+
+function decode(data) {
+  if (!Array.isArray(data) || data.some(book => !book || typeof book.title !== 'string' || !book.title.trim())) {
+    throw new Error('Ce fichier ne contient pas une liste de livres reconnue.');
+  }
+  return data.map(book => ({
+    ...Object.fromEntries(fields.map(key => [key, str(book[key])])),
+    id: str(book.id) || newId(),
+    cover: coverImage(str(book.cover)),
+    themes: Array.isArray(book.themes) ? book.themes.map(str).filter(Boolean) : [],
+    quotes: Array.isArray(book.quotes) ? book.quotes.filter(q => q && str(q.text).trim()).map(q => ({text:str(q.text), page:str(q.page)})) : []
+  }));
+}
+
+async function request(method, body) {
+  const response = await fetch(endpoint, {
+    method,
+    cache: 'no-store',
+    headers: { Authorization: 'Bearer ' + accessKey, 'Content-Type': 'application/json' },
+    body: body === undefined ? undefined : JSON.stringify(body)
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const error = new Error(result.error || 'La synchronisation a échoué. Réessaie dans un instant.');
+    error.status = response.status;
+    throw error;
+  }
+  return result;
+}
+
+async function refresh() {
+  if (!accessKey || refreshing || writing || saving || editor.open) return;
+  refreshing = true;
+  try {
+    const result = await request('GET');
+    books = decode(result.books);
+    version = result.version;
+    render();
+  } finally {
+    refreshing = false;
+  }
+}
+
+async function persist(next) {
+  if (refreshing || writing) throw new Error('Synchronisation en cours. Réessaie dans un instant.');
+  writing = true;
+  try {
+    const result = await request('PUT', { books: next, version });
+    version = result.version;
+    books = next;
+  } catch (error) {
+    if (error.status === 409) {
+      const latest = await request('GET');
+      const fresh = decode(latest.books);
+      if (editing && editor.open) {
+        const current = fresh.find(entry => entry.id === editing.id);
+        if (current && JSON.stringify(current) === JSON.stringify(editing)) {
+          editing = current;
+        } else {
+          error.message = 'Cette fiche a changé sur un autre appareil. Copie tes modifications, puis rouvre la fiche pour les reporter.';
+        }
+        if (current !== editing || !current) throw error;
+      }
+      books = fresh;
+      version = latest.version;
+      render();
+    }
+    throw error;
+  } finally {
+    writing = false;
+  }
+}
+
+$('unlock').addEventListener('submit',async event => {
+  event.preventDefault();
+  accessKey = $('access-key').value.trim();
+  $('login-status').textContent = 'Ouverture…';
+  try {
+    await refresh();
+    $('access-key').value = '';
+    $('unlock').hidden = true;
+    $('library').hidden = false;
+  } catch (error) {
+    accessKey = '';
+    $('login-status').textContent = error.message;
+  }
+});
+
+window.addEventListener('focus',() => {
+  refresh().catch(error => { $('status').textContent = error.message; });
+});
+
+function element(tag, text = '', className = '') {
+  const node = document.createElement(tag);
+  node.textContent = text;
+  node.className = className;
+  return node;
+}
+
+function action(label, fn) {
+  const button = element('button', label);
+  button.type = 'button';
+  button.addEventListener('click', fn);
+  return button;
+}
+
+function formatDate(date) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(date) ? date.split('-').reverse().join('/') : date;
+}
+
+function render() {
+  const theme = $('theme');
+  const previous = theme.value;
+  const themes = [...new Set(books.flatMap(book => book.themes))].sort((a,b) => a.localeCompare(b,'fr'));
+  theme.replaceChildren(new Option('Tous les thèmes',''), ...themes.map(value => new Option(value,value)));
+  theme.value = themes.includes(previous) ? previous : '';
+  const query = norm($('search').value.trim());
+  const matches = text => norm(text).includes(query);
+  const selected = books.filter(book => !theme.value || book.themes.includes(theme.value))
+    .sort((a,b) => b.readingDate.localeCompare(a.readingDate) || a.title.localeCompare(b.title,'fr'));
+  const cards = [];
+  for (const book of selected) {
+    const identity = [book.title,book.author,...book.themes].join(' ');
+    if (view === 'quotes') {
+      for (const quote of book.quotes) {
+        if (matches([identity,quote.text,quote.page].join(' '))) cards.push(quoteCard(book,quote));
+      }
+    } else if (matches([identity,book.comment,book.practice,...book.quotes.map(q => q.text)].join(' '))) {
+      cards.push(bookCard(book));
+    }
+  }
+  const noun = view === 'books' ? 'livre' : 'citation';
+  $('status').textContent = cards.length + ' ' + noun + (cards.length === 1 ? '' : 's');
+  $('results').replaceChildren(...cards);
+  if (!cards.length) {
+    const message = query || theme.value ? 'Aucun résultat pour cette recherche.'
+      : view === 'quotes' ? 'Ajoute une citation dans une fiche de lecture.'
+      : 'Ajoute ton premier livre ou importe ton ancien carnet.';
+    $('results').append(element('p',message,'empty'));
+  }
+}
+
+function quoteCard(book, quote) {
+  const card = element('article','','card');
+  card.append(element('blockquote',quote.text),element('p',[book.author,book.title,quote.page && 'p. ' + quote.page].filter(Boolean).join(' · '),'meta'));
+  card.append(action('Ouvrir la fiche',() => openBook(book)));
+  return card;
+}
+
+function bookCard(book) {
+  const card = element('article','','card');
+  const header = element('header');
+  if (book.cover) {
+    const image = element('img');
+    image.src = book.cover;
+    image.alt = '';
+    header.append(image);
+  }
+  const title = element('div');
+  title.append(element('h3',book.title),element('div',book.author,'meta'));
+  const details = [book.edition,book.editionDate,book.readingDate && 'Terminé le ' + formatDate(book.readingDate),book.note !== '' && book.note + '/10'].filter(Boolean);
+  if (details.length) title.append(element('small',details.join(' · ')));
+  header.append(title);
+  card.append(header);
+  for (const theme of book.themes) card.append(element('span',theme,'tag'));
+  for (const [label,value] of [['Ce que je retiens',book.comment],['En consultation',book.practice]]) {
+    if (value) card.append(element('h4',label),element('p',value));
+  }
+  for (const quote of book.quotes) card.append(element('blockquote',quote.text + (quote.page ? ' — p. ' + quote.page : '')));
+  const actions = element('div','','actions');
+  actions.append(action('Modifier',() => openBook(book)),action('Supprimer',async () => {
+    if (!confirm('Supprimer « ' + book.title + ' » ?')) return;
+    try {
+      await persist(books.filter(entry => entry !== book));
+      render();
+    } catch (error) {
+      $('status').textContent = error.message;
+    }
+  }));
+  card.append(actions);
+  return card;
+}
+
+function addQuote(quote = {}) {
+  const row = element('fieldset');
+  const quoteLabel = element('label','Phrase ou passage');
+  const text = element('textarea');
+  text.className = 'quote-text';
+  text.value = quote.text ?? '';
+  quoteLabel.append(text);
+  const pageLabel = element('label','Page ou repère');
+  const page = element('input');
+  page.className = 'quote-page';
+  page.value = quote.page ?? '';
+  pageLabel.append(page);
+  row.append(quoteLabel,pageLabel,action('Retirer cette citation',() => row.remove()));
+  $('quote-fields').append(row);
+  return text;
+}
+
+function openBook(book = null) {
+  editing = book;
+  form.reset();
+  $('form-error').hidden = true;
+  $('quote-fields').replaceChildren();
+  $('editor-title').textContent = book ? 'Modifier la fiche' : 'Ajouter un livre';
+  if (book) {
+    for (const field of fields) form.elements[field].value = book[field];
+    form.elements.themes.value = book.themes.join(', ');
+    book.quotes.forEach(addQuote);
+  }
+  editor.showModal();
+  form.elements.title.focus();
+}
+
+function readImage(file) {
+  return new Promise((resolve,reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const image = coverImage(str(reader.result));
+      if (image) resolve(image);
+      else reject(new Error('Choisis une couverture au format JPEG, PNG, WebP ou GIF.'));
+    };
+    reader.onerror = () => reject(new Error('Impossible de lire la couverture.'));
+    reader.readAsDataURL(file);
+  });
+}
+
+form.addEventListener('submit', async event => {
+  event.preventDefault();
+  if (saving) return;
+  saving = true;
+  $('save').disabled = true;
+  $('cancel').disabled = true;
+  $('form-error').hidden = true;
+  try {
+    const book = Object.fromEntries(fields.map(field => [field,form.elements[field].value.trim()]));
+    if (!book.title || !book.author) throw new Error('Indique un titre et un auteur ou une autrice.');
+    book.id = editing?.id ?? newId();
+    book.themes = [...new Set(form.elements.themes.value.split(',').map(s => s.trim()).filter(Boolean))];
+    book.quotes = [...$('quote-fields').children].map(row => ({
+      text:row.querySelector('.quote-text').value.trim(),page:row.querySelector('.quote-page').value.trim()
+    })).filter(q => q.text);
+    const file = form.elements.cover.files[0];
+    book.cover = file ? await readImage(file) : editing?.cover ?? '';
+    await persist(editing ? books.map(entry => entry === editing ? book : entry) : [...books,book]);
+    editor.close();
+    render();
+  } catch (error) {
+    $('form-error').textContent = error.message;
+    $('form-error').hidden = false;
+  } finally {
+    saving = false;
+    $('save').disabled = false;
+    $('cancel').disabled = false;
+  }
+});
+
+$('backup').addEventListener('click',() => {
+  const url = URL.createObjectURL(new Blob([JSON.stringify(books,null,2)],{type:'application/json'}));
+  const link = element('a');
+  link.href = url;
+  link.download = 'mes_lectures.json';
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url),1000);
+});
+
+$('import').addEventListener('change',async event => {
+  const file = event.target.files[0];
+  if (!file) return;
+  try {
+    const imported = decode(JSON.parse(await file.text()));
+    const key = ({id,...book}) => JSON.stringify(book);
+    const seen = new Set(books.map(key));
+    const added = imported.filter(book => {
+      const signature = key(book);
+      if (seen.has(signature)) return false;
+      seen.add(signature);
+      return true;
+    });
+    await persist([...books,...added.map(book => ({...book,id:newId()}))]);
+    render();
+    $('status').textContent = added.length ? added.length + ' fiche(s) importée(s).' : 'Aucune nouvelle fiche à importer.';
+  } catch (error) {
+    $('status').textContent = error instanceof SyntaxError ? 'Ce fichier JSON est illisible.' : error.message;
+  } finally {
+    event.target.value = '';
+  }
+});
+
+for (const name of ['books','quotes']) {
+  $(name + '-tab').addEventListener('click',() => {
+    view = name;
+    $('books-tab').setAttribute('aria-pressed',String(name === 'books'));
+    $('quotes-tab').setAttribute('aria-pressed',String(name === 'quotes'));
+    render();
+  });
+}
+$('restore').addEventListener('click',() => $('import').click());
+$('add').addEventListener('click',() => openBook());
+$('add-quote').addEventListener('click',() => addQuote().focus());
+$('cancel').addEventListener('click',() => editor.close());
+editor.addEventListener('cancel',event => { if (saving) event.preventDefault(); });
+$('search').addEventListener('input',render);
+$('theme').addEventListener('change',render);
+render();
+</script>
+</html>
