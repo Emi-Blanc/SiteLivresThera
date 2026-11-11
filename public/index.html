@@ -14,7 +14,7 @@
 <main>
 <form id="unlock">
 <label>Clé d’accès au carnet<input id="access-key" type="password" required autocomplete="current-password"></label>
-<div><button class="primary">Ouvrir mon carnet</button></div>
+<div><button class="primary" id="unlock-button">Ouvrir mon carnet</button></div>
 <p id="login-status" role="status"></p>
 </form>
 <div id="library" hidden>
@@ -54,6 +54,7 @@ let books = [];
 let editing = null;
 let view = 'books';
 let accessKey = '';
+let signingIn = false;
 let version = null;
 let refreshing = false;
 let writing = false;
@@ -133,20 +134,30 @@ async function persist(next) {
 
 $('unlock').addEventListener('submit',async event => {
   event.preventDefault();
+  if (signingIn) return;
+  signingIn = true;
+  $('unlock-button').disabled = true;
   accessKey = $('access-key').value.trim();
   $('login-status').textContent = 'Ouverture…';
   try {
-    await refresh();
+    const result = await request('GET');
+    books = decode(result.books);
+    version = result.version;
+    render();
     $('access-key').value = '';
     $('unlock').hidden = true;
     $('library').hidden = false;
   } catch (error) {
     accessKey = '';
     $('login-status').textContent = error.message;
+  } finally {
+    signingIn = false;
+    $('unlock-button').disabled = false;
   }
 });
 
 window.addEventListener('focus',() => {
+  if (!$('unlock').hidden) return;
   refresh().catch(error => { $('status').textContent = error.message; });
 });
 
