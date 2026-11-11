@@ -157,7 +157,7 @@ details.editor-section[open] > summary { margin-bottom: .65rem; }
 <div class="tools"><input id="search" type="search" aria-label="Rechercher dans le carnet" placeholder="Rechercher un livre, un thème, une phrase…"><select id="theme" aria-label="Filtrer par thème"><option value="">Tous les thèmes</option></select></div>
 <p id="status" role="status"></p>
 <section id="results" class="grid" aria-label="Résultats"></section>
-<footer><div class="actions"><button id="backup">Exporter mes lectures</button><button id="restore">Importer un fichier JSON</button><input hidden type="file" accept=".json,application/json" id="import"></div><p><small>Les fiches enregistrées sont accessibles avec la même clé sur tes appareils. Tu peux aussi en exporter une copie.</small></p></footer>
+<footer><details class="editor-section"><summary>Sauvegarde</summary><div class="actions"><button id="backup">Exporter mes lectures</button><button id="restore">Importer un fichier JSON</button><input hidden type="file" accept=".json,application/json" id="import"></div><p><small>Les fiches enregistrées sont accessibles avec la même clé sur tes appareils. Tu peux aussi en exporter une copie.</small></p></details></footer>
 </div></main>
 <dialog id="editor" aria-labelledby="editor-title"><form id="book-form">
 <h2 id="editor-title">Ajouter un livre</h2>
